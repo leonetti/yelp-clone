@@ -2,21 +2,25 @@
 require('dotenv').config();
 
 const express = require('express');
-const morgan = require('morgan');
+const morgan = require('morgan'); // HTTP request that simplifies logs
+const db = require('./db'); // Postgres Database
 
 const app = express();
 
-// built in express middleware
+// BUILT IN EXPRESS MIDDLEWARE
 // takes information in body of our request and attatches it to the request object under req.body
 app.use(express.json());
 
-// third party middleware
+// THIRD PARTY MIDDLEWARE
 app.use(morgan('dev'));
 
-// custom middleware
+// CUSTOM MIDDLEWARE
 
-// GET all restaurants
-app.get('/api/v1/restaurants', (req, res) => {
+// GET ALL restaurants
+app.get('/api/v1/restaurants', async (req, res) => {
+  const results = await db.query('SELECT * FROM restaurants');
+  console.log(results);
+
   res.status(200).json({
     status: 'success',
     data: {
@@ -25,7 +29,7 @@ app.get('/api/v1/restaurants', (req, res) => {
   });
 });
 
-// GET a restaurant
+// GET ONE restaurant
 app.get('/api/v1/restaurants/:id', (req, res) => {
   res.status(200).json({
     status: 'success',
@@ -35,7 +39,7 @@ app.get('/api/v1/restaurants/:id', (req, res) => {
   });
 });
 
-// CREATE a restaurant
+// CREATE ONE restaurant
 app.post('/api/v1/restaurants', (req, res) => {
   res.status(201).json({
     status: 'success',
@@ -45,7 +49,7 @@ app.post('/api/v1/restaurants', (req, res) => {
   });
 });
 
-// UPDATE a restaurant
+// UPDATE ONE restaurant
 app.put('/api/v1/restaurants/:id', (req, res) => {
   res.status(200).json({
     status: 'success',
@@ -55,7 +59,7 @@ app.put('/api/v1/restaurants/:id', (req, res) => {
   });
 });
 
-// DELETE a restaurant
+// DELETE ONE restaurant
 app.delete('/api/v1/restaraunts/:id', (req, res) => {
   res.status(204).json({
     status: 'success',
