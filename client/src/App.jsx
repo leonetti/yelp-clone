@@ -3,7 +3,7 @@ import { BrowserRouter as Router, Routes, Route } from 'react-router-dom';
 import { RestaurantsContextProvider } from './context/RestaurantsContext';
 import HomePage from './routes/HomePage';
 import RestaurantDetailPage from './routes/RestaurantDetailPage';
-import RestaurantUpdatePage from './routes/RestaurantUpdatePage';
+import UpdateRestaurantPage from './routes/UpdateRestaurantPage';
 
 function App() {
   return (
@@ -14,7 +14,7 @@ function App() {
             <Route path="/" element={<HomePage />} />
             <Route
               path="/restaurants/:id/update"
-              element={<RestaurantUpdatePage />}
+              element={<UpdateRestaurantPage />}
             />
             <Route path="/restaurants/:id" element={<RestaurantDetailPage />} />
           </Routes>

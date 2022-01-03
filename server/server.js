@@ -21,15 +21,15 @@ app.use(morgan('dev'));
 // GET ALL restaurants
 app.get('/api/v1/restaurants', async (req, res) => {
   try {
-    const results = await db.query(
-      'SELECT * FROM restaurants',
+    const restaurantRatings = await db.query(
+      'SELECT * FROM restaurants LEFT JOIN (SELECT restaurant_id, COUNT(*), TRUNC(AVG(rating), 1) as average_rating FROM reviews GROUP BY restaurant_id) reviews ON restaurants.id = reviews.restaurant_id',
     );
 
     res.status(200).json({
       status: 'success',
-      length: results.rows.length || 0,
+      results: restaurantRatings.rows.length,
       data: {
-        restaurants: results.rows,
+        restaurants: restaurantRatings.rows,
       },
     });
   } catch (error) {
@@ -41,16 +41,23 @@ app.get('/api/v1/restaurants', async (req, res) => {
 // GET ONE restaurant
 app.get('/api/v1/restaurants/:id', async (req, res) => {
   try {
-    const results = await db.query(
-      'SELECT * FROM restaurants WHERE id = $1',
+    // Get restaurant
+    const restaurant = await db.query(
+      'SELECT * FROM restaurants LEFT JOIN (SELECT restaurant_id, COUNT(*), TRUNC(AVG(rating), 1) as average_rating FROM reviews GROUP BY restaurant_id) reviews ON restaurants.id = reviews.restaurant_id WHERE id = $1',
+      [req.params.id],
+    );
+
+    // Get reviews for restaurant
+    const reviews = await db.query(
+      'SELECT * FROM reviews WHERE restaurant_id = $1',
       [req.params.id],
     );
 
     res.status(200).json({
       status: 'success',
-      length: results.rows.length || 0,
       data: {
-        restaurant: results.rows[0],
+        reviews: reviews.rows,
+        restaurant: restaurant.rows[0],
       },
     });
   } catch (error) {
@@ -69,7 +76,6 @@ app.post('/api/v1/restaurants', async (req, res) => {
 
     res.status(201).json({
       status: 'success',
-      length: results.rows.length || 0,
       data: {
         restaurant: results.rows[0],
       },
@@ -90,7 +96,6 @@ app.put('/api/v1/restaurants/:id', async (req, res) => {
 
     res.status(200).json({
       status: 'success',
-      length: results.rows.length || 0,
       data: {
         restaurant: results.rows[0],
       },
@@ -102,7 +107,7 @@ app.put('/api/v1/restaurants/:id', async (req, res) => {
 });
 
 // DELETE ONE restaurant
-app.delete('/api/v1/restaraunts/:id', (req, res) => {
+app.delete('/api/v1/restaurants/:id', (req, res) => {
   try {
     db.query(
       'DELETE FROM restaurants WHERE id = $1',
@@ -111,6 +116,24 @@ app.delete('/api/v1/restaraunts/:id', (req, res) => {
 
     res.status(204).json({
       status: 'success',
+    });
+  } catch (error) {
+    // TO DO
+    console.log(error);
+  }
+});
+
+app.post('/api/v1/restaurants/:id/addReview', async (req, res) => {
+  try {
+    const newReview = await db.query(
+      'INSERT INTO reviews (restaurant_id, name, review, rating) values ($1, $2, $3, $4) returning *',
+      [req.params.id, req.body.name, req.body.review, req.body.rating],
+    );
+    res.status(201).json({
+      status: 'success',
+      data: {
+        review: newReview.rows[0],
+      },
     });
   } catch (error) {
     // TO DO

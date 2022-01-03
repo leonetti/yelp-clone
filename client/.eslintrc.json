@@ -18,6 +18,24 @@
         "react"
     ],
     "rules": {
-        "operator-linebreak": 0 // Used because conflict between prettier and eslint for where operators should be
+        "operator-linebreak": 0, // Used because conflict between prettier and eslint for where operators should be
+        "object-curly-newline": [
+            "error",
+            {
+                "ObjectExpression": {
+                    "consistent": true,
+                    "multiline": true
+                },
+                "ObjectPattern": {
+                    "consistent": true,
+                    "multiline": true
+                },
+                "ImportDeclaration": "never",
+                "ExportDeclaration": {
+                    "multiline": true,
+                    "minProperties": 3
+                }
+            }
+        ]
     }
 }
