@@ -2,6 +2,7 @@
 require('dotenv').config();
 
 const express = require('express');
+const cors = require('cors'); // Middleware to configure CORS requests (since server/client are on diff ports)
 const morgan = require('morgan'); // HTTP request that simplifies logs
 const db = require('./db'); // Postgres Database
 
@@ -12,6 +13,7 @@ const app = express();
 app.use(express.json());
 
 // THIRD PARTY MIDDLEWARE
+app.use(cors());
 app.use(morgan('dev'));
 
 // CUSTOM MIDDLEWARE

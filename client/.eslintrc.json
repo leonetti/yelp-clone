@@ -18,5 +18,6 @@
         "react"
     ],
     "rules": {
+        "operator-linebreak": 0 // Used because conflict between prettier and eslint for where operators should be
     }
 }
